@@ -190,6 +190,7 @@ ul.parameters > li > p,
 }
 
 ul.methods > li,
+ul.routes > li,
 ul.properties > li,
 ul.events > li {
   list-style: none;
@@ -208,12 +209,14 @@ ul.events > li {
 }
 
 .member.method > h2,
+.member.routes > h2,
 .member.property > h2,
 .member.event > h2 {
   margin-bottom: .5em;
 }
 
 ul.methods > li > h3,
+ul.routes > li > h3,
 ul.properties > li > h3,
 ul.events > li > h3 {
   margin: -19px -19px 1em -19px;

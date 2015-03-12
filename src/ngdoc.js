@@ -367,6 +367,7 @@ Doc.prototype = {
       }
     });
     flush();
+
     this.shortName = this.name ? this.name.split(/[\.:#]/).pop().trim() : '';
     this.id = this.id || // if we have an id just use it
       (this.ngdoc === 'error' ? this.name : '') ||
@@ -436,6 +437,11 @@ Doc.prototype = {
         } else if(atName == 'eventType') {
           match = text.match(/(broadcast|emit)/);
           self.type = match[1];
+          self.target = match[2];
+        } else if(atName === 'route') {
+          self.route = {
+            url: text
+          };
         } else {
           self[atName] = text;
         }
@@ -837,15 +843,38 @@ Doc.prototype = {
   },
 
   html_usage_service: function(dom) {
-    this.html_usage_interface(dom)
+    this.html_usage_interface(dom);
   },
 
   html_usage_object: function(dom) {
-    this.html_usage_interface(dom)
+    this.html_usage_interface(dom);
+  },
+
+  html_usage_api: function(dom) {
+    this.backend_routes(dom);
   },
 
   html_usage_controller: function(dom) {
-    this.html_usage_interface(dom)
+    this.html_usage_interface(dom);
+  },
+
+  backend_routes: function(dom) {
+    var self = this;
+
+    if (self.methods.length) {
+      dom.div({class:'member method'}, function(){
+        dom.h('Routes', self.methods, function(method){
+          if (method.route) {
+            dom.h(method.route.url, method, function() {
+              dom.html(method.description);
+              dom.h('Example', method.example, dom.html);
+            });
+          }
+        });
+      });
+    }
+    
+
   },
 
   method_properties_events: function(dom) {
@@ -855,6 +884,7 @@ Doc.prototype = {
         dom.h('Methods', self.methods, function(method){
           //filters out .IsProperty parameters from the method signature
           var signature = (method.param || []).filter(function(e) { return e.isProperty !== true; }).map(property('name'));
+
           dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function() {
             dom.html(method.description);
             method.html_usage_parameters(dom);
